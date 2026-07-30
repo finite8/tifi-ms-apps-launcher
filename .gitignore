@@ -1,0 +1,13 @@
+# Build output (packages are produced by CI / the packaging command)
+dist/
+
+# Stray/local zips
+*.zip
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*~
+.idea/
+.vscode/
+node_modules/

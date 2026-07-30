@@ -1,0 +1,86 @@
+name: Release
+
+# Build the extension package(s) and publish them as a GitHub Release
+# whenever a version tag (e.g. v1.6.0) is pushed.
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch: {} # allow manual runs for testing (no release published)
+
+permissions:
+  contents: write # required to create the Release and upload assets
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Determine version
+        id: ver
+        run: |
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            VERSION="${GITHUB_REF_NAME#v}"      # strip leading "v"
+          else
+            VERSION="$(jq -r .version src/manifest.json)-dev"
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Version: ${VERSION}"
+
+      - name: Validate manifest version matches tag
+        if: github.ref_type == 'tag'
+        run: |
+          MANIFEST_VERSION="$(jq -r .version src/manifest.json)"
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          echo "manifest=${MANIFEST_VERSION}  tag=${TAG_VERSION}"
+          if [ "${MANIFEST_VERSION}" != "${TAG_VERSION}" ]; then
+            echo "::error::src/manifest.json version (${MANIFEST_VERSION}) does not match tag (${TAG_VERSION}). Bump the manifest before tagging."
+            exit 1
+          fi
+
+      - name: Syntax-check scripts and manifest
+        run: |
+          jq empty src/manifest.json
+          for f in src/background.js src/content.js src/injected.js src/popup.js src/options.js; do
+            node --check "$f"
+          done
+
+      - name: Build packages
+        id: build
+        run: |
+          VERSION="${{ steps.ver.outputs.version }}"
+          # Add more entries here as new browser targets are introduced.
+          TARGETS="chromium"
+          for target in $TARGETS; do
+            outdir="dist/${target}"
+            mkdir -p "$outdir"
+            zipfile="${outdir}/myapps-launcher-tifi-${target}-${VERSION}.zip"
+            rm -f "$zipfile"
+            # Zip the CONTENTS of src/ so manifest.json sits at the zip root.
+            ( cd src && zip -qr "../${zipfile}" . -x '.*' )
+            echo "Built ${zipfile}"
+            unzip -l "$zipfile" | grep -q ' manifest.json$' \
+              || { echo "::error::manifest.json is not at the zip root"; exit 1; }
+          done
+
+      - name: Upload build artifacts (always)
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-packages
+          path: dist/**/*.zip
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/**/*.zip
+          generate_release_notes: true
+          fail_on_unmatched_files: true

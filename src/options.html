@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="options.css" />
+    <title>My Apps Launcher (TIFI) — Settings</title>
+  </head>
+  <body>
+    <div class="page">
+      <header class="head">
+        <div class="title">
+          <img src="icons/icon48.png" alt="" width="28" height="28" />
+          <div>
+            <h1>My Apps Launcher <span class="brandtag">TIFI</span></h1>
+            <div class="muted small">There I Fixed It · Settings &amp; stored data · v<span id="version">–</span></div>
+          </div>
+        </div>
+        <div id="toast" class="toast hidden"></div>
+      </header>
+
+      <!-- Connection status -->
+      <section class="card">
+        <h2>Status</h2>
+        <div class="grid">
+          <div><span class="muted">Signed in</span><div id="st-login" class="val">–</div></div>
+          <div><span class="muted">Tenant ID</span><div id="st-tenant" class="val mono">–</div></div>
+          <div><span class="muted">Last synced</span><div id="st-sync" class="val">–</div></div>
+          <div><span class="muted">Apps cached</span><div id="st-count" class="val">–</div></div>
+        </div>
+        <div class="row-actions">
+          <button id="syncNowBtn" class="btn">Sync now</button>
+          <a id="openPortalLink" class="btn ghost" href="https://myapplications.microsoft.com/" target="_blank" rel="noopener">Open My Apps portal</a>
+        </div>
+      </section>
+
+      <!-- Preferences -->
+      <section class="card">
+        <h2>Preferences</h2>
+        <div class="field">
+          <label for="setRecentMax">Apps in the "Recent" section</label>
+          <input id="setRecentMax" type="number" min="1" max="20" step="1" />
+          <p class="muted small">How many of your most-used apps to promote to the top.</p>
+        </div>
+        <div class="field">
+          <label for="setRankMode">Recent ordering</label>
+          <select id="setRankMode">
+            <option value="frequency">Most frequently used</option>
+            <option value="recency">Most recently used</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="check">
+            <input id="setAutoSync" type="checkbox" />
+            <span>Automatic background sync</span>
+          </label>
+          <p class="muted small">
+            When on, the extension briefly opens a hidden My Apps tab to refresh
+            your list. When off, it only refreshes from a My Apps tab you already
+            have open.
+          </p>
+        </div>
+      </section>
+
+      <!-- Stored apps -->
+      <section class="card">
+        <h2>Your apps <span id="appsCount" class="pill">0</span></h2>
+        <p class="muted small">The full list currently cached in this browser. Launch URL is what opens when you click an app.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>App</th><th>Launch URL</th></tr></thead>
+            <tbody id="appsTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Usage history -->
+      <section class="card">
+        <h2>Usage history <span id="historyCount" class="pill">0</span></h2>
+        <p class="muted small">Your last 100 opens, aggregated. Used to rank the Recent section. Stored only on this device.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>App</th><th>Times opened</th><th>Last opened</th></tr></thead>
+            <tbody id="historyTable"></tbody>
+          </table>
+        </div>
+        <div class="row-actions">
+          <button id="clearHistoryBtn" class="btn warn">Clear usage history</button>
+        </div>
+      </section>
+
+      <!-- Data & privacy -->
+      <section class="card">
+        <h2>Data &amp; privacy</h2>
+        <p class="muted small">
+          Everything this extension knows is stored locally in your browser
+          (<code>chrome.storage.local</code>). Nothing is sent to any third-party
+          server — app data is read only from Microsoft's own My Apps portal using
+          your existing signed-in session.
+        </p>
+        <div class="row-actions">
+          <button id="clearFavBtn" class="btn warn">Clear favourites</button>
+          <button id="clearAppsBtn" class="btn warn">Clear cached apps</button>
+          <button id="resetAllBtn" class="btn danger">Reset everything</button>
+        </div>
+        <details class="raw">
+          <summary>View all raw stored data</summary>
+          <div class="row-actions">
+            <button id="copyRawBtn" class="btn ghost small">Copy JSON</button>
+          </div>
+          <pre id="rawJson" class="mono"></pre>
+        </details>
+      </section>
+    </div>
+
+    <script src="options.js"></script>
+  </body>
+</html>

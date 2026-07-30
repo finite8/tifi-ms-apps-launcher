@@ -1,0 +1,63 @@
+{
+  "manifest_version": 3,
+  "name": "My Apps Launcher (TIFI)",
+  "version": "1.6.0",
+  "description": "Fast, reliable launcher for your Microsoft My Apps portal. Search, favourite, and open your assigned apps from the toolbar.",
+  "author": "There I Fixed It (TIFI)",
+  "action": {
+    "default_title": "My Apps Launcher (TIFI)",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "tabs",
+    "storage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://myapplications.microsoft.com/*",
+    "https://*.myapplications.microsoft.com/*",
+    "https://account.activedirectory.windowsazure.com/*",
+    "https://launcher.myapps.microsoft.com/*",
+    "https://login.microsoftonline.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://myapplications.microsoft.com/*",
+        "https://account.activedirectory.windowsazure.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "injected.js"
+      ],
+      "matches": [
+        "https://myapplications.microsoft.com/*",
+        "https://account.activedirectory.windowsazure.com/*"
+      ]
+    }
+  ]
+}
