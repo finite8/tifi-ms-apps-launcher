@@ -1,4 +1,4 @@
-# Privacy Policy — My Apps Launcher (TIFI)
+# Privacy Policy - My Apps Launcher (TIFI)
 
 _Last updated: 30 July 2026_
 
@@ -6,7 +6,7 @@ My Apps Launcher (TIFI) ("the extension") is a browser extension that gives you
 a fast, searchable launcher for the applications assigned to you in Microsoft's
 My Apps portal.
 
-## The short version
+## In short
 
 The extension does **not** collect, transmit, sell, or share any of your data.
 Everything it knows is stored **locally in your own browser** and never leaves
@@ -17,15 +17,15 @@ your device.
 The extension stores the following in your browser's local extension storage
 (`chrome.storage.local`) on your device only:
 
-- **Your app list** — the names, icons, and launch URLs of the apps shown in
+- **Your app list**: the names, icons, and launch URLs of the apps shown in
   your My Apps portal.
-- **Your Microsoft tenant ID** — read from a launch link on the My Apps page and
-  used solely to build the correct app launch URLs.
-- **Usage history** — a rolling record of your last 100 app opens, used to rank
+- **Your Microsoft tenant ID**: read from a launch link on the My Apps page and
+  used only to build the correct app launch URLs.
+- **Usage history**: a rolling record of your last 100 app opens, used to rank
   your most-used apps.
-- **Favourites** — the apps you have starred.
-- **Preferences** — your settings (e.g. Recent section size, ordering, sync
-  behaviour) and sign-in state.
+- **Favourites**: the apps you have starred.
+- **Preferences**: your settings such as Recent section size, ordering, sync
+  behaviour, and sign-in state.
 
 ## What is NOT collected
 
@@ -42,10 +42,10 @@ portal pages (`myapplications.microsoft.com`) using your existing signed-in
 session, the same way the portal shows them to you. Launching an app opens
 Microsoft's own launch URL.
 
-## Your control
+## Manage stored data
 
-Open the extension's **Settings** page at any time to view everything that is
-stored (including the complete raw data) and to delete it:
+Open the extension's **Settings** page at any time to review what is stored,
+including the raw data, and delete it:
 
 - **Clear favourites**
 - **Clear usage history**

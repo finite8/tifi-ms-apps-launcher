@@ -3,7 +3,7 @@
   "name": "My Apps Launcher (TIFI)",
   "version": "1.6.0",
   "description": "Fast, reliable launcher for your Microsoft My Apps portal. Search, favourite, and open your assigned apps from the toolbar.",
-  "author": "There I Fixed It (TIFI)",
+  "author": "finite8",
   "action": {
     "default_title": "My Apps Launcher (TIFI)",
     "default_popup": "popup.html",

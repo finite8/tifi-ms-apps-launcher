@@ -1,4 +1,4 @@
-# My Apps Launcher (TIFI) — Microsoft Edge / Chromium
+# My Apps Launcher (TIFI) - Microsoft Edge / Chromium
 
 *Part of the "There I Fixed It" (TIFI) collection.*
 
@@ -9,7 +9,7 @@ from the toolbar.
 
 ## What it does
 
-- **Login button** when you're signed out or your session has expired — opens
+- **Login button** when you're signed out or your session has expired. Opens
   the normal Microsoft login flow.
 - **Full app list** once you're signed in.
 - **Search bar** that filters the list as you type. Press **Enter** to open the
@@ -23,7 +23,7 @@ from the toolbar.
 - **Settings** (⚙) opens a full page where you can see everything the extension
   has stored (status, tenant ID, cached apps, usage history, and the raw JSON),
   adjust preferences (Recent size, ordering, background sync), and clear any of
-  it — clear history, clear cached apps, or reset everything.
+  it. From there you can clear history, clear cached apps, or reset everything.
 
 ## How it gets your apps ("auto tab sync")
 
@@ -31,10 +31,10 @@ Microsoft's My Apps portal loads your app tiles from a private, token-protected
 endpoint, so the extension can't just call it directly. Instead it uses **your
 existing signed-in browser session**:
 
-1. When you open the popup (or hit Refresh), the extension quietly opens a
+1. When you open the popup (or hit Refresh), the extension opens a
    background My Apps tab (or reuses one you already have open).
-2. A content script on that page captures your app tiles — both from the
-   portal's own network response and from the rendered page — and caches them.
+2. A content script on that page captures your app tiles, both from the
+  portal's own network response and from the rendered page, and caches them.
 3. The background tab is closed automatically, and your list appears in the popup.
 
 Nothing leaves your machine: the app list is stored only in the browser's local
@@ -59,13 +59,13 @@ The same folder also loads in Chrome via **chrome://extensions → Load unpacked
 ## First run
 
 Click the toolbar icon. If you're not signed in, click **Log in to My Apps** and
-complete the normal Microsoft sign-in. After that, open the popup again — your
+complete the normal Microsoft sign-in. After that, open the popup again and your
 apps will be listed. Use Refresh anytime the list looks stale.
 
 ## Notes & troubleshooting
 
 - **First sync after login** may take a few seconds while the portal loads.
-- If the list is empty right after signing in, click **⟳ Refresh** once — the
+- If the list is empty right after signing in, click **⟳ Refresh** once. The
   portal sometimes needs a moment to finish authenticating.
 - My Apps uses an **undocumented internal API** that Microsoft can change without
   notice. The capture logic is deliberately flexible (it tries several field
