@@ -72,17 +72,3 @@ apps will be listed. Use Refresh anytime the list looks stale.
   names and also reads the page directly), but if Microsoft overhauls the portal
   the selectors in `content.js` / `injected.js` may need a small update.
 - This extension is unofficial and not affiliated with Microsoft.
-
-## Files (in `src/`)
-
-| File | Purpose |
-|------|---------|
-| `manifest.json` | Manifest V3 config, permissions, content scripts |
-| `background.js` | Service worker: cache, sync orchestration, login state |
-| `content.js` | Runs on My Apps pages: injects interceptor + scrapes tiles |
-| `injected.js` | Page-world hook that captures the tiles API response |
-| `popup.html/.css/.js` | The toolbar popup UI |
-| `options.html/.css/.js` | The Settings & stored-data page |
-| `icons/` | Toolbar icons |
-
-Repo docs (outside `src/`): `README.md`, `BROWSERS.md`, `STORE_LISTING.md`, `PRIVACY.md`.
