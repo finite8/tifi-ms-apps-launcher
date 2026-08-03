@@ -1,5 +1,7 @@
 # My Apps Launcher (TIFI) - Microsoft Edge / Chromium
 
+![preview](preview.png)
+
 *Part of the "There I Fixed It" (TIFI) collection.*
 
 A lightweight replacement for the official *My Apps Secure Sign-in* extension,
@@ -46,12 +48,17 @@ The extension source lives in **`src/`** (one shared codebase for all browsers);
 packaged zips are written to **`dist/`**. See `BROWSERS.md` for the packaging
 commands and how to add Firefox later.
 
-## Install (Edge)
+## Install
 
-1. Open **edge://extensions**.
-2. Turn on **Developer mode** (toggle, bottom-left).
-3. Click **Load unpacked** and select the **`src`** folder.
-4. Pin the extension: click the puzzle-piece icon in the toolbar and pin
+Available on the Chrome Web Store here: https://chromewebstore.google.com/detail/My%20Apps%20Launcher%20%28TIFI%29/diglkahdhoipellainhmhdolgagddehd
+
+### Manual Install (Edge)
+
+1. Download and extract the zip from the release https://github.com/finite8/tifi-ms-apps-launcher/releases
+2. Open **edge://extensions**.
+3. Turn on **Developer mode** (toggle, bottom-left).
+4. Click **Load unpacked** and select the **`src`** folder.
+5. Pin the extension: click the puzzle-piece icon in the toolbar and pin
    "My Apps Launcher (TIFI)".
 
 The same folder also loads in Chrome via **chrome://extensions → Load unpacked**.
