@@ -63,8 +63,18 @@ jobs:
             mkdir -p "$outdir"
             zipfile="${outdir}/myapps-launcher-tifi-${target}-${VERSION}.zip"
             rm -f "$zipfile"
-            # Zip the CONTENTS of src/ so manifest.json sits at the zip root.
-            ( cd src && zip -qr "../${zipfile}" . -x '.*' )
+            if [ "$target" = "firefox" ]; then
+              stage="$(mktemp -d)"
+              cp -R src/. "$stage/"
+              # Firefox does not support background.service_worker.
+              jq 'del(.background.service_worker)' "$stage/manifest.json" > "$stage/manifest.tmp.json"
+              mv "$stage/manifest.tmp.json" "$stage/manifest.json"
+              ( cd "$stage" && zip -qr "$GITHUB_WORKSPACE/${zipfile}" . -x '.*' )
+              rm -rf "$stage"
+            else
+              # Zip the CONTENTS of src/ so manifest.json sits at the zip root.
+              ( cd src && zip -qr "../${zipfile}" . -x '.*' )
+            fi
             echo "Built ${zipfile}"
             unzip -l "$zipfile" | grep -q ' manifest.json$' \
               || { echo "::error::manifest.json is not at the zip root"; exit 1; }
