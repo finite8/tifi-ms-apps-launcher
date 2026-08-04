@@ -1,4 +1,4 @@
-# My Apps Launcher (TIFI) - Microsoft Edge / Chromium
+# My Apps Launcher (TIFI) - Edge, Chrome, and Firefox
 
 ![preview](preview.png)
 
@@ -46,13 +46,13 @@ extension storage. No third-party servers are contacted.
 
 The extension source lives in **`src/`** (one shared codebase for all browsers);
 packaged zips are written to **`dist/`**. See `BROWSERS.md` for the packaging
-commands and how to add Firefox later.
+commands and browser-specific notes.
 
 ## Install
 
 Available on the Chrome Web Store here: https://chromewebstore.google.com/detail/My%20Apps%20Launcher%20%28TIFI%29/diglkahdhoipellainhmhdolgagddehd
 
-### Manual Install (Edge)
+### Manual Install (Edge / Chrome)
 
 1. Download and extract the zip from the release https://github.com/finite8/tifi-ms-apps-launcher/releases
 2. Open **edge://extensions**.
@@ -62,6 +62,15 @@ Available on the Chrome Web Store here: https://chromewebstore.google.com/detail
    "My Apps Launcher (TIFI)".
 
 The same folder also loads in Chrome via **chrome://extensions → Load unpacked**.
+
+### Manual Install (Firefox)
+
+1. Download and extract the zip from the release https://github.com/finite8/tifi-ms-apps-launcher/releases
+2. Open **about:debugging#/runtime/this-firefox**.
+3. Click **Load Temporary Add-on…**.
+4. Select the extension **`manifest.json`** from the extracted **`src`** folder.
+
+For permanent installation in Firefox, publish the Firefox zip to AMO (addons.mozilla.org).
 
 ## First run
 

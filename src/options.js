@@ -11,14 +11,15 @@ const DEFAULTS = {
   rankMode: "frequency",
   autoSync: true,
 };
+const api = globalThis.browser ?? globalThis.chrome;
 
 const $ = (id) => document.getElementById(id);
 
 function getAll() {
-  return chrome.storage.local.get(null); // everything actually stored
+  return api.storage.local.get(null); // everything actually stored
 }
 function set(patch) {
-  return chrome.storage.local.set(patch);
+  return api.storage.local.set(patch);
 }
 
 function keyForApp(a) {
@@ -69,13 +70,13 @@ async function render() {
   const s = Object.assign({}, DEFAULTS, await getAll());
 
   // Version
-  $("version").textContent = chrome.runtime.getManifest().version;
+  $("version").textContent = api.runtime.getManifest().version;
 
   // Status
   $("st-login").textContent =
     s.loginState === "loggedIn" ? "Yes" :
-    s.loginState === "loggedOut" ? "No (session expired / signed out)" :
-    "Unknown";
+      s.loginState === "loggedOut" ? "No (session expired / signed out)" :
+        "Unknown";
   $("st-tenant").textContent = s.tenantId || "–";
   $("st-sync").textContent = s.lastSync
     ? timeAgo(s.lastSync) + "  (" + fmtDate(s.lastSync) + ")"
@@ -168,7 +169,7 @@ $("setAutoSync").addEventListener("change", async (e) => {
 
 // ---- actions ----
 $("syncNowBtn").addEventListener("click", async () => {
-  await chrome.runtime.sendMessage({ type: "SYNC", force: true }).catch(() => {});
+  await api.runtime.sendMessage({ type: "SYNC", force: true }).catch(() => { });
   toast("Syncing…");
 });
 $("clearHistoryBtn").addEventListener("click", async () => {
@@ -188,7 +189,7 @@ $("clearAppsBtn").addEventListener("click", async () => {
 });
 $("resetAllBtn").addEventListener("click", async () => {
   if (!confirm("Reset everything? This erases all stored data (apps, history, tenant, settings) and signs the extension out.")) return;
-  await chrome.storage.local.clear();
+  await api.storage.local.clear();
   toast("All data reset");
 });
 $("copyRawBtn").addEventListener("click", async () => {
@@ -201,7 +202,7 @@ $("copyRawBtn").addEventListener("click", async () => {
 });
 
 // Live-refresh when anything in storage changes.
-chrome.storage.onChanged.addListener((changes, area) => {
+api.storage.onChanged.addListener((changes, area) => {
   if (area === "local") render();
 });
 

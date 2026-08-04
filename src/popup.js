@@ -1,5 +1,6 @@
 // popup.js — UI for My Apps Launcher
 const RECENT_MAX = 6; // apps shown in the "Recent" section
+const api = globalThis.browser ?? globalThis.chrome;
 
 const els = {
   search: document.getElementById("search"),
@@ -8,6 +9,7 @@ const els = {
   loginView: document.getElementById("loginView"),
   loadingView: document.getElementById("loadingView"),
   loadingText: document.getElementById("loadingText"),
+  loadingHelp: document.getElementById("loadingHelp"),
   status: document.getElementById("status"),
   footer: document.getElementById("footer"),
   count: document.getElementById("count"),
@@ -15,6 +17,7 @@ const els = {
   refreshBtn: document.getElementById("refreshBtn"),
   settingsBtn: document.getElementById("settingsBtn"),
   logoutBtn: document.getElementById("logoutBtn"),
+  loadingPortalLink: document.getElementById("loadingPortalLink"),
   openPortal: document.getElementById("openPortal"),
 };
 
@@ -26,9 +29,27 @@ let activeIndex = 0;
 let tenantId = null;
 let recentMax = RECENT_MAX;
 let rankMode = "frequency"; // 'frequency' | 'recency'
+let loadingHelpTimer = null;
+
+function hideLoadingHelp() {
+  if (loadingHelpTimer) {
+    clearTimeout(loadingHelpTimer);
+    loadingHelpTimer = null;
+  }
+  if (els.loadingHelp) els.loadingHelp.classList.add("hidden");
+}
+
+function armLoadingHelpDelay() {
+  hideLoadingHelp();
+  loadingHelpTimer = setTimeout(() => {
+    if (!apps.length && !els.loadingView.classList.contains("hidden")) {
+      els.loadingHelp.classList.remove("hidden");
+    }
+  }, 10000);
+}
 
 function send(msg) {
-  return chrome.runtime.sendMessage(msg).catch(() => ({}));
+  return api.runtime.sendMessage(msg).catch(() => ({}));
 }
 
 function show(view) {
@@ -38,6 +59,9 @@ function show(view) {
   els.searchWrap.classList.toggle("hidden", !appsMode);
   els.list.classList.toggle("hidden", !appsMode);
   els.footer.classList.toggle("hidden", !appsMode);
+
+  if (view === "loading") armLoadingHelpDelay();
+  else hideLoadingHelp();
 }
 
 function setStatus(text) {
@@ -76,6 +100,11 @@ function launchUrlFor(app) {
     return u;
   }
   return "https://myapplications.microsoft.com/";
+}
+
+function openMyAppsPortal() {
+  api.tabs.create({ url: "https://myapplications.microsoft.com/" });
+  window.close();
 }
 
 // ---- ranking -------------------------------------------------------------
@@ -259,7 +288,7 @@ function setActive(i) {
 
 async function openApp(app) {
   await send({ type: "RECORD_OPEN", key: keyForApp(app) });
-  chrome.tabs.create({ url: launchUrlFor(app) });
+  api.tabs.create({ url: launchUrlFor(app) });
   window.close();
 }
 
@@ -287,8 +316,8 @@ els.refreshBtn.addEventListener("click", async () => {
   await send({ type: "SYNC", force: true });
 });
 els.settingsBtn.addEventListener("click", () => {
-  if (chrome.runtime.openOptionsPage) chrome.runtime.openOptionsPage();
-  else chrome.tabs.create({ url: chrome.runtime.getURL("options.html") });
+  if (api.runtime.openOptionsPage) api.runtime.openOptionsPage();
+  else api.tabs.create({ url: api.runtime.getURL("options.html") });
   window.close();
 });
 els.logoutBtn.addEventListener("click", async () => {
@@ -296,14 +325,17 @@ els.logoutBtn.addEventListener("click", async () => {
   apps = [];
   show("login");
 });
+els.loadingPortalLink.addEventListener("click", (e) => {
+  e.preventDefault();
+  openMyAppsPortal();
+});
 els.openPortal.addEventListener("click", (e) => {
   e.preventDefault();
-  chrome.tabs.create({ url: "https://myapplications.microsoft.com/" });
-  window.close();
+  openMyAppsPortal();
 });
 
 // ---- live updates from background ----
-chrome.runtime.onMessage.addListener((msg) => {
+api.runtime.onMessage.addListener((msg) => {
   if (!msg) return;
   if (msg.type === "APPS_UPDATED") {
     refreshState();
@@ -311,8 +343,13 @@ chrome.runtime.onMessage.addListener((msg) => {
     if (!apps.length) show("login");
     setStatus("");
   } else if (msg.type === "SYNC_TIMEOUT") {
-    if (!apps.length) show("login");
-    else setStatus("Couldn't refresh — showing last known list.");
+    if (!apps.length) {
+      show("loading");
+      els.loadingText.textContent = "Still syncing your apps…";
+      els.loadingHelp.classList.remove("hidden");
+    } else {
+      setStatus("Couldn't refresh — showing last known list.");
+    }
   }
 });
 

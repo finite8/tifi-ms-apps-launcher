@@ -10,12 +10,13 @@ const LOGOUT_URL =
   "?post_logout_redirect_uri=" +
   encodeURIComponent("https://myapplications.microsoft.com/");
 
-const SYNC_TIMEOUT_MS = 30000;
+const SYNC_TIMEOUT_MS = 10000;
+const api = globalThis.browser ?? globalThis.chrome;
 
 // ---- storage helpers -------------------------------------------------------
 
 async function getState() {
-  return chrome.storage.local.get({
+  return api.storage.local.get({
     apps: [],
     lastSync: 0,
     loginState: "unknown", // unknown | loggedIn | loggedOut
@@ -44,17 +45,17 @@ async function recordOpen(key) {
 }
 
 async function setState(patch) {
-  await chrome.storage.local.set(patch);
+  await api.storage.local.set(patch);
 }
 
 function notifyPopup(msg) {
-  chrome.runtime.sendMessage(msg).catch(() => {});
+  api.runtime.sendMessage(msg).catch(() => { });
 }
 
 // ---- sync orchestration ----------------------------------------------------
 
 async function findExistingMyAppsTab() {
-  const tabs = await chrome.tabs.query({ url: MYAPPS_MATCH });
+  const tabs = await api.tabs.query({ url: MYAPPS_MATCH });
   return tabs && tabs.length ? tabs[0] : null;
 }
 
@@ -69,12 +70,12 @@ async function startSync({ force = false } = {}) {
   if (existing) {
     await setState({ syncTabId: existing.id, syncTabOpenedByUs: false });
     try {
-      await chrome.tabs.sendMessage(existing.id, { type: "RECAPTURE" });
+      await api.tabs.sendMessage(existing.id, { type: "RECAPTURE" });
     } catch (e) {
-      chrome.tabs.reload(existing.id);
+      api.tabs.reload(existing.id);
     }
   } else if (s.autoSync !== false) {
-    const tab = await chrome.tabs.create({ url: MYAPPS_URL, active: false });
+    const tab = await api.tabs.create({ url: MYAPPS_URL, active: false });
     await setState({ syncTabId: tab.id, syncTabOpenedByUs: true });
   } else {
     // Manual mode + no open My Apps tab: can't sync silently.
@@ -84,17 +85,17 @@ async function startSync({ force = false } = {}) {
     return;
   }
 
-  chrome.alarms.clear("syncTimeout");
-  chrome.alarms.create("syncTimeout", { when: Date.now() + SYNC_TIMEOUT_MS });
+  api.alarms.clear("syncTimeout");
+  api.alarms.create("syncTimeout", { when: Date.now() + SYNC_TIMEOUT_MS });
 }
 
 async function finishSync({ loginState } = {}) {
-  chrome.alarms.clear("syncTimeout");
+  api.alarms.clear("syncTimeout");
   const s = await getState();
   if (s.syncTabOpenedByUs && s.syncTabId != null) {
     try {
-      await chrome.tabs.remove(s.syncTabId);
-    } catch (e) {}
+      await api.tabs.remove(s.syncTabId);
+    } catch (e) { }
   }
   const patch = { syncing: false, syncTabId: null, syncTabOpenedByUs: false };
   if (loginState) patch.loginState = loginState;
@@ -225,7 +226,7 @@ function completeDomApp(a, tenantId) {
 
 // ---- message handling ------------------------------------------------------
 
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+api.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   (async () => {
     switch (msg && msg.type) {
       case "GET_STATE":
@@ -257,12 +258,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       case "LOGIN": {
         const existing = await findExistingMyAppsTab();
         if (existing) {
-          await chrome.tabs.update(existing.id, { active: true });
+          await api.tabs.update(existing.id, { active: true });
           if (existing.windowId != null) {
-            chrome.windows.update(existing.windowId, { focused: true });
+            api.windows.update(existing.windowId, { focused: true });
           }
         } else {
-          await chrome.tabs.create({ url: MYAPPS_URL, active: true });
+          await api.tabs.create({ url: MYAPPS_URL, active: true });
         }
         sendResponse({ ok: true });
         break;
@@ -270,7 +271,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
       case "LOGOUT":
         await setState({ apps: [], loginState: "loggedOut", lastSync: 0 });
-        await chrome.tabs.create({ url: LOGOUT_URL, active: true });
+        await api.tabs.create({ url: LOGOUT_URL, active: true });
         sendResponse({ ok: true });
         break;
 
@@ -324,7 +325,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   return true;
 });
 
-chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+api.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   const s = await getState();
   if (s.syncTabId !== tabId) return;
   const url = changeInfo.url || (tab && tab.url) || "";
@@ -334,19 +335,19 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   }
 });
 
-chrome.tabs.onRemoved.addListener(async (tabId) => {
+api.tabs.onRemoved.addListener(async (tabId) => {
   const s = await getState();
   if (s.syncTabId === tabId) {
     await setState({ syncing: false, syncTabId: null, syncTabOpenedByUs: false });
-    chrome.alarms.clear("syncTimeout");
+    api.alarms.clear("syncTimeout");
   }
 });
 
-chrome.alarms.onAlarm.addListener(async (alarm) => {
+api.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === "syncTimeout") {
     const s = await getState();
     if (s.syncing) {
-      const loginState = s.loginState === "loggedIn" ? "loggedIn" : "loggedOut";
+      const loginState = s.loginState === "loggedIn" ? "loggedIn" : "unknown";
       await finishSync({ loginState });
       notifyPopup({ type: "SYNC_TIMEOUT" });
     }
@@ -355,7 +356,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
 // Clear stale cached apps whenever the extension is installed or reloaded,
 // so old (bad) launch URLs can't linger. Next sync repopulates the list.
-chrome.runtime.onInstalled.addListener(async () => {
-  await chrome.storage.local.set({ apps: [], lastSync: 0, syncing: false });
-  await chrome.storage.local.remove(["debugSample", "debugTiles"]);
+api.runtime.onInstalled.addListener(async () => {
+  await api.storage.local.set({ apps: [], lastSync: 0, syncing: false });
+  await api.storage.local.remove(["debugSample", "debugTiles"]);
 });

@@ -9,6 +9,7 @@
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
+      "32": "icons/icon48.png",
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     }
@@ -19,11 +20,21 @@
   },
   "icons": {
     "16": "icons/icon16.png",
+    "32": "icons/icon48.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{31dcfdbf-35f1-4e3f-a8ed-b455f4d11cbf}",
+      "strict_min_version": "115.0"
+    }
   },
   "permissions": [
     "tabs",

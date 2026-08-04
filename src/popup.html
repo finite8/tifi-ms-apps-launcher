@@ -1,56 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="popup.css" />
-    <title>My Apps Launcher</title>
-  </head>
-  <body>
-    <header class="bar">
-      <div class="brand">
-        <img src="icons/icon48.png" alt="" width="18" height="18" />
-        <span>My Apps</span>
-        <span class="tag" title="There I Fixed It">TIFI</span>
-      </div>
-      <div class="bar-actions">
-        <button id="refreshBtn" class="icon-btn" title="Refresh app list">&#x21bb;</button>
-        <button id="settingsBtn" class="icon-btn" title="Settings">&#x2699;</button>
-        <button id="logoutBtn" class="icon-btn" title="Log out">Logout</button>
-      </div>
-    </header>
 
-    <div id="searchWrap" class="search-wrap hidden">
-      <input
-        id="search"
-        type="text"
-        placeholder="Search apps…  (Enter opens the first)"
-        autocomplete="off"
-        spellcheck="false"
-      />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="popup.css" />
+  <title>My Apps Launcher</title>
+</head>
+
+<body>
+  <header class="bar">
+    <div class="brand">
+      <img src="icons/icon48.png" alt="" width="18" height="18" />
+      <span>My Apps</span>
+      <span class="tag" title="There I Fixed It">TIFI</span>
     </div>
-
-    <div id="status" class="status hidden"></div>
-
-    <ul id="list" class="app-list" role="listbox" aria-label="Your apps"></ul>
-
-    <!-- Logged-out / no-session view -->
-    <div id="loginView" class="center-view hidden">
-      <p class="muted">You're not signed in, or your session expired.</p>
-      <button id="loginBtn" class="primary">Log in to My Apps</button>
+    <div class="bar-actions">
+      <button id="refreshBtn" class="icon-btn" title="Refresh app list">&#x21bb;</button>
+      <button id="settingsBtn" class="icon-btn" title="Settings">&#x2699;</button>
+      <button id="logoutBtn" class="icon-btn" title="Log out">Logout</button>
     </div>
+  </header>
 
-    <!-- Loading view -->
-    <div id="loadingView" class="center-view">
-      <div class="spinner"></div>
-      <p id="loadingText" class="muted">Loading…</p>
-    </div>
+  <div id="searchWrap" class="search-wrap hidden">
+    <input id="search" type="text" placeholder="Search apps…  (Enter opens the first)" autocomplete="off"
+      spellcheck="false" />
+  </div>
 
-    <footer id="footer" class="foot hidden">
-      <span id="count" class="muted"></span>
-      <a id="openPortal" href="#" class="link">Open My Apps page</a>
-    </footer>
+  <div id="status" class="status hidden"></div>
 
-    <script src="popup.js"></script>
-  </body>
+  <ul id="list" class="app-list" role="listbox" aria-label="Your apps"></ul>
+
+  <!-- Logged-out / no-session view -->
+  <div id="loginView" class="center-view hidden">
+    <p class="muted">You're not signed in, or your session expired.</p>
+    <button id="loginBtn" class="primary">Log in to My Apps</button>
+  </div>
+
+  <!-- Loading view -->
+  <div id="loadingView" class="center-view">
+    <div class="spinner"></div>
+    <p id="loadingText" class="muted">Loading…</p>
+    <p id="loadingHelp" class="loading-help muted hidden">
+      If this doesn't load your apps list, open the
+      <a id="loadingPortalLink" href="#" class="link">My Apps page here</a>
+      to force the refresh.
+    </p>
+  </div>
+
+  <footer id="footer" class="foot hidden">
+    <span id="count" class="muted"></span>
+    <a id="openPortal" href="#" class="link">Open My Apps page</a>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+
 </html>

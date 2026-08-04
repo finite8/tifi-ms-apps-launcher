@@ -57,7 +57,7 @@ jobs:
         run: |
           VERSION="${{ steps.ver.outputs.version }}"
           # Add more entries here as new browser targets are introduced.
-          TARGETS="chromium"
+          TARGETS="chromium firefox"
           for target in $TARGETS; do
             outdir="dist/${target}"
             mkdir -p "$outdir"

@@ -4,28 +4,30 @@
 // 3. Captures the tenant id from a launcher link on the page.
 // 4. Forwards everything to the background service worker.
 (function () {
+  const api = globalThis.browser ?? globalThis.chrome;
+
   // ---- inject the page-world interceptor ASAP ----
   try {
     const s = document.createElement("script");
-    s.src = chrome.runtime.getURL("injected.js");
+    s.src = api.runtime.getURL("injected.js");
     s.async = false;
     (document.head || document.documentElement).appendChild(s);
     s.remove();
-  } catch (e) {}
+  } catch (e) { }
 
   const SIGNIN_RE = /launcher\.myapps\.microsoft\.com\/api\/signin\//i;
 
   function send(apps, source) {
     try {
-      chrome.runtime.sendMessage({ type: "APPS_CAPTURED", apps, source });
-    } catch (e) {}
+      api.runtime.sendMessage({ type: "APPS_CAPTURED", apps, source });
+    } catch (e) { }
   }
 
   function sendContext(tenantId) {
     if (!tenantId) return;
     try {
-      chrome.runtime.sendMessage({ type: "CONTEXT", tenantId });
-    } catch (e) {}
+      api.runtime.sendMessage({ type: "CONTEXT", tenantId });
+    } catch (e) { }
   }
 
   // ---- tenant id from any launcher link on the page ----
@@ -37,7 +39,7 @@
       try {
         const t = new URL(a.href).searchParams.get("tenantId");
         if (t) return t;
-      } catch (e) {}
+      } catch (e) { }
     }
     return null;
   }
@@ -96,7 +98,7 @@
 
   let stopped = false;
   let attempts = 0;
-  const MAX_ATTEMPTS = 25; // ~25s at 1s intervals
+  const MAX_ATTEMPTS = 10; // ~10s at 1s intervals
 
   function pollDom() {
     if (stopped) return;
@@ -113,7 +115,7 @@
   }
 
   // ---- respond to background's recapture request ----
-  chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  api.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (msg && msg.type === "RECAPTURE") {
       const tid = findTenantId();
       if (tid) sendContext(tid);
